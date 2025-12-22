@@ -4,7 +4,7 @@ const authController = require("../controllers/authController");
 
 const {
   getLeaveBalanceById,
-  // AddProducts,
+
   UpdateProducts,
   deleteProducts,
   getproductStats,
