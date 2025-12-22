@@ -7,13 +7,31 @@ const LeaveBalanceSchema = new mongoose.Schema({
     required: true,
   },
   year: number,
-  balance: {
-    sick: { type: Number, default: 0 },
-    casual: { type: Number, default: 0 },
-    earned: { type: Number, default: 0 },
-    vacation: { type: Number, default: 0 },
-    paid: { type: Number, default: 0 },
-    other: { type: Number, default: 0 },
+  categories: {
+    annual: {
+      total: 6,
+      used: 0,
+      pending: 0,
+      available: 6,
+    },
+    vacation: {
+      total: 15,
+      used: 0,
+      pending: 0,
+      available: 15,
+    },
+    sick: {
+      total: 12,
+      used: 1,
+      pending: 0,
+      available: 9,
+    },
+    casual: {
+      total: 5,
+      used: 0,
+      pending: 0,
+      available: 5,
+    },
   },
 });
 

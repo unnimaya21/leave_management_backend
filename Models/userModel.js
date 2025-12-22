@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema({
     enum: ["sales", "marketing", "development", "hr", "finance", "other"],
     default: "other",
   },
-  designation: String,
+  designation: { type: String, required: [true, "Designation is required"] },
   joinedDate: {
     type: Date,
     default: Date.now,

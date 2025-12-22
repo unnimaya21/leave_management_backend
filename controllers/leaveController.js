@@ -7,7 +7,7 @@ const CustomError = require("../Utils/customError");
 const asyncErrorHandler = require("../Utils/asyncErrorHandler");
 
 //GET ALL PRODUCTS OR FILTERED PRODUCTS BASED ON QUERY PARAMS
-exports.getProducts = asyncErrorHandler(async (req, res) => {
+exports.getLeaveBalance = asyncErrorHandler(async (req, res) => {
   let queryParams = req.query;
   console.log(queryParams);
 
@@ -120,6 +120,21 @@ exports.getProducts = asyncErrorHandler(async (req, res) => {
   //       }
   //     }
   //   }
+});
+
+//GET LEAVE BALANCE BY ID
+exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.params.id;
+  const leave = await Product.findById(userId);
+
+  if (!leave) {
+    return next(new CustomError("user not found", 404));
+  }
+
+  res.json({
+    status: "success",
+    leave,
+  });
 });
 
 // CREATE NEW PRODUCT
