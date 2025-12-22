@@ -1,0 +1,97 @@
+[
+  {
+    "id": "1",
+    "name": "Wireless Bluetooth Headphones",
+    "category": "Electronics",
+    "price": 79.99,
+    "currency": "USD",
+    "description": "High-quality wireless headphones with noise cancellation and long battery life.",
+    "imageUrl": "https://example.com/images/headphones.jpg",
+    "inStock": true,
+    "rating": 4.5,
+    "reviews": [
+      {
+        "userId": "user_abc",
+        "rating": 5,
+        "comment": "Amazing sound quality and comfortable fit!"
+      },
+      {
+        "userId": "user_xyz",
+        "rating": 4,
+        "comment": "Good value for money, but bass could be stronger."
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Organic Cotton T-Shirt",
+    "category": "Apparel",
+    "price": 24.5,
+    "currency": "USD",
+    "description": "Soft and breathable t-shirt made from 100% organic cotton.",
+    "imageUrl": "https://example.com/images/tshirt.jpg",
+    "inStock": true,
+    "rating": 4.8,
+    "sizesAvailable": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Stainless Steel Water Bottle",
+    "category": "Home Goods",
+    "price": 19.95,
+    "currency": "USD",
+    "description": "Insulated water bottle keeping drinks cold for 24 hours and hot for 12.",
+    "imageUrl": "https://example.com/images/waterbottle.jpg",
+    "inStock": false,
+    "rating": 4.2
+  },
+  {
+    "name": "Glass Water Bottle",
+    "category": "Home Goods",
+    "price": 19.95,
+    "currency": "USD",
+    "description": "Insulated water bottle keeping drinks cold for 24 hours and hot for 12.",
+    "imageUrl": "https://example.com/images/waterbottle.jpg",
+    "inStock": false,
+    "rating": 4.2,
+    "id": "4"
+  },
+  {
+    "name": "Snacks Box",
+    "category": "Home Goods",
+    "price": 10.95,
+    "currency": "USD",
+    "description": "Insulated water bottle keeping drinks cold for 24 hours and hot for 12.",
+    "imageUrl": "https://example.com/images/waterbottle.jpg",
+    "inStock": false,
+    "rating": 4.2,
+    "id": "5"
+  },
+  {
+    "name": "Lundry bag",
+    "category": "Home Goods",
+    "price": 9.95,
+    "currency": "USD",
+    "description": "Insulated water bottle keeping drinks cold for 24 hours and hot for 12.",
+    "imageUrl": "https://example.com/images/waterbottle.jpg",
+    "inStock": false,
+    "rating": 4.2,
+    "id": "6"
+  },
+  {
+    "name": "Lundry bag",
+    "category": "Home Goods",
+    "price": 9.95,
+    "currency": "USD",
+    "description": "Insulated water bottle keeping drinks cold for 24 hours and hot for 12.",
+    "imageUrl": "https://example.com/images/waterbottle.jpg",
+    "inStock": false,
+    "rating": 4.2,
+    "id": "7"
+  }
+]
