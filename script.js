@@ -41,7 +41,7 @@ app.use(express.json({ limit: "10kb" })); //required to parse JSON bodies in POS
 //   })
 // ); // Prevent parameter pollution
 // Mount the router for products routes
-app.use("/api/v1/products", leavesRoute);
+app.use("/api/v1/leaves", leavesRoute);
 
 app.use("/api/v1/auth", authRouter);
 

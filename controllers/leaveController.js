@@ -5,6 +5,7 @@ const Product = require("../Models/productsModel");
 const apiFeatures = require("../Utils/apiFeatures");
 const CustomError = require("../Utils/customError");
 const asyncErrorHandler = require("../Utils/asyncErrorHandler");
+const LeaveRequest = require("../Models/leaveRequestModel");
 
 //GET ALL PRODUCTS OR FILTERED PRODUCTS BASED ON QUERY PARAMS
 exports.getLeaveBalance = asyncErrorHandler(async (req, res) => {
@@ -134,6 +135,16 @@ exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
   res.json({
     status: "success",
     leave,
+  });
+});
+
+// ADD NEW LEAVE REQEST ENTRY
+exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
+  const savedLeaveRequest = await LeaveRequest.create(req.body);
+
+  res.status(201).json({
+    status: "success",
+    data: savedLeaveRequest,
   });
 });
 

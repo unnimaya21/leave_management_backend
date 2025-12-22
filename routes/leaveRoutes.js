@@ -4,7 +4,7 @@ const authController = require("../controllers/authController");
 
 const {
   getLeaveBalanceById,
-
+  AddLeaveRequest,
   UpdateProducts,
   deleteProducts,
   getproductStats,
@@ -23,6 +23,5 @@ router
 router.route("/stats").get(getproductStats);
 router.route("/product-by-tag/:tag").get(getProductsByTag);
 router.route("/leave-balance/:id").get(getLeaveBalanceById);
-
-//EXPORT ROUTER
+router.route("/newLeaveRequest").post(authController.protect, AddLeaveRequest); //EXPORT ROUTER
 module.exports = router;

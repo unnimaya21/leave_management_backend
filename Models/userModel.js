@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
   },
   department: {
     type: String,
-    enum: ["sales", "marketing", "development", "hr", "finance", "other"],
+    enum: ["sales", "marketing", "development", "hr", "other"],
     default: "other",
   },
   designation: { type: String, required: [true, "Designation is required"] },
