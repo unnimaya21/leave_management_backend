@@ -3,15 +3,15 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 
 const {
-  getProducts,
-  AddProducts,
+  getLeaveBalanceById,
+  // AddProducts,
   UpdateProducts,
   deleteProducts,
   getproductStats,
   getProductsByTag,
-} = require("../controllers/productController");
+} = require("../controllers/leaveController");
 
-router.route("/").get(authController.protect, getProducts).post(AddProducts);
+// router.route("/").get(authController.protect, getProducts).post(AddProducts);
 router
   .route("/:id")
   .patch(UpdateProducts)
@@ -22,6 +22,7 @@ router
   );
 router.route("/stats").get(getproductStats);
 router.route("/product-by-tag/:tag").get(getProductsByTag);
+router.route("/leave-balance/:id").get(getLeaveBalanceById);
 
 //EXPORT ROUTER
 module.exports = router;

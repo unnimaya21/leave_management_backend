@@ -14,7 +14,7 @@ const app = express();
 //   message: "Too many requests from this IP, please try again after 15 minutes",
 // });
 // app.use("/api", limit); // Apply rate limiting to all /api routes
-const productsRoute = require("./routes/products_routes");
+const leavesRoute = require("./routes/leaveRoutes");
 const router = express.Router();
 const CustomError = require("./Utils/customError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -41,7 +41,7 @@ app.use(express.json({ limit: "10kb" })); //required to parse JSON bodies in POS
 //   })
 // ); // Prevent parameter pollution
 // Mount the router for products routes
-app.use("/api/v1/products", productsRoute);
+app.use("/api/v1/products", leavesRoute);
 
 app.use("/api/v1/auth", authRouter);
 
