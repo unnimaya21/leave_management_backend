@@ -140,7 +140,15 @@ exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
 
 // ADD NEW LEAVE REQEST ENTRY
 exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
-  const savedLeaveRequest = await LeaveRequest.create(req.body);
+  const userId = req.user ? req.user.id : req.body.userId;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
+    });
+  }
+  const savedLeaveRequest = await LeaveRequest.create(req.body, ...{ userId });
 
   res.status(201).json({
     status: "success",
