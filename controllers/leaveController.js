@@ -179,8 +179,8 @@ exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
 
 //WITHDRAW LEAVE REQUEST BY ID
 exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
-  const leaveRequestId = req.params.id;
-
+  const leaveRequestId = req.params.requestId;
+  console.log("Withdraw Leave Request ID: " + leaveRequestId);
   const leaveRequest = await LeaveRequest.findById(leaveRequestId);
 
   if (!leaveRequest) {

@@ -28,6 +28,6 @@ router.route("/leave-balance/:id").get(getLeaveBalanceById);
 router.route("/newLeaveRequest").post(authController.protect, AddLeaveRequest); //EXPORT ROUTER
 router.route("/").get(authController.protect, getLeaveRequestsByUserId);
 router
-  .route("/withdraw/:userId")
+  .route("/withdraw/:requestId")
   .patch(authController.protect, withdrawLeaveRequestById);
 module.exports = router;
