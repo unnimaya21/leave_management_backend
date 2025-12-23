@@ -177,6 +177,31 @@ exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+//WITHDRAW LEAVE REQUEST BY ID
+exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
+  const leaveRequestId = req.params.id;
+
+  const leaveRequest = await LeaveRequest.findById(leaveRequestId);
+
+  if (!leaveRequest) {
+    return next(new CustomError("Leave request not found", 404));
+  }
+
+  if (leaveRequest.status !== "pending") {
+    return next(
+      new CustomError("Only pending leave requests can be withdrawn", 400)
+    );
+  }
+
+  leaveRequest.status = "withdrawn";
+  await leaveRequest.save();
+
+  res.status(200).json({
+    status: "success",
+    data: leaveRequest,
+  });
+});
+
 // CREATE NEW PRODUCT
 exports.AddProducts = asyncErrorHandler(async (req, res, next) => {
   const savedProduct = await Product.create(req.body);

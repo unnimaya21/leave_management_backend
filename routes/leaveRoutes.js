@@ -10,6 +10,7 @@ const {
   getproductStats,
   getProductsByTag,
   getLeaveRequestsByUserId,
+  withdrawLeaveRequestById,
 } = require("../controllers/leaveController");
 
 // router.route("/").get(authController.protect, getProducts).post(AddProducts);
@@ -26,5 +27,7 @@ router.route("/product-by-tag/:tag").get(getProductsByTag);
 router.route("/leave-balance/:id").get(getLeaveBalanceById);
 router.route("/newLeaveRequest").post(authController.protect, AddLeaveRequest); //EXPORT ROUTER
 router.route("/").get(authController.protect, getLeaveRequestsByUserId);
-
+router
+  .route("/withdraw/:userId")
+  .patch(authController.protect, withdrawLeaveRequestById);
 module.exports = router;

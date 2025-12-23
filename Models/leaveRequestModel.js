@@ -17,7 +17,7 @@ const LeaveRequestSchema = new mongoose.Schema({
   totalDays: { type: Number, required: true },
   status: {
     type: String,
-    enum: ["pending", "approved", "rejected"],
+    enum: ["pending", "approved", "rejected", "withdrawn"],
     default: "pending",
   },
   requestedAt: { type: Date, default: Date.now },
