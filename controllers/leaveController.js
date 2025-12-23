@@ -24,110 +24,12 @@ exports.getLeaveBalance = asyncErrorHandler(async (req, res) => {
     results: filteredProducts.length,
     data: filteredProducts,
   });
-
-  //   if (Object.keys(queryParams).length === 0) {
-  //     try {
-  //       const allProducts = await Product.find();
-  //       res.json({
-  //         status: "success",
-  //         count: allProducts.length,
-  //         data: allProducts,
-  //       });
-  //       return;
-  //     } catch (err) {
-  //       res.status(404).json({
-  //         status: "error",
-  //         message: err.message,
-  //       });
-  //     }
-  //   } else {
-  //     if (queryParams.id) {
-  //       try {
-  //         // filteredProducts =awsit Product.find({ _id: queryParams.id });
-  //         const filteredProducts = await Product.findById(queryParams.id);
-
-  //         return res.json({
-  //           status: "success",
-  //           data: filteredProducts,
-  //         });
-  //       } catch (err) {
-  //         res.status(404).json({
-  //           status: "error",
-  //           message: err.message,
-  //         });
-  //       }
-  //     }
-  //     if (queryParams.name) {
-  //       try {
-  //         const filteredProducts = await Product.find({ name: queryParams.name });
-  //         return res.json({
-  //           status: "success",
-  //           data: filteredProducts,
-  //         });
-  //       } catch (err) {
-  //         res.status(404).json({
-  //           status: "error",
-  //           message: err.message,
-  //         });
-  //       }
-  //     }
-  //     if (queryParams.fields) {
-  //       try {
-  //         const fields = queryParams.fields.split(",").join(" ");
-  //         const filteredProducts = await Product.find().select(fields);
-  //         return res.json({
-  //           status: "success",
-  //           data: filteredProducts,
-  //         });
-  //       } catch (err) {
-  //         res.status(404).json({
-  //           status: "error",
-  //           message: err.message,
-  //         });
-  //       }
-  //     }
-  //     if (queryParams.sort) {
-  //       try {
-  //         const sortBy = queryParams.sort.split(",").join(" ");
-  //         const filteredProducts = await Product.find().sort(sortBy);
-  //         return res.json({
-  //           status: "success",
-  //           data: filteredProducts,
-  //         });
-  //       } catch (err) {
-  //         res.status(404).json({
-  //           status: "error",
-  //           message: err.message,
-  //         });
-  //       }
-  //     }
-  //     if (queryParams.limit || queryParams.page) {
-  //       let skip;
-  //       let page;
-  //       try {
-  //         page = queryParams.page * 1 || 1;
-  //         const limit = queryParams.limit * 1 || 10;
-  //         skip = (page - 1) * limit;
-  //         const filteredProducts = await Product.find().skip(skip).limit(limit);
-  //         return res.json({
-  //           status: "success",
-  //           count: filteredProducts.length,
-  //           data: filteredProducts,
-  //         });
-  //       } catch (err) {
-  //         res.status(404).json({
-  //           status: "error",
-  //           message: err.message,
-  //         });
-  //       }
-  //     }
-  //   }
 });
 
 //GET LEAVE BALANCE BY ID
 exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
   const userId = req.params.id;
-  const leave = await Product.findById(userId);
+  const leave = await LeaveBalance.findById(userId);
 
   if (!leave) {
     return next(new CustomError("user not found", 404));
@@ -212,114 +114,28 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
     data: leaveRequest,
   });
 });
-
-// CREATE NEW PRODUCT
-exports.AddProducts = asyncErrorHandler(async (req, res, next) => {
-  const savedProduct = await Product.create(req.body);
-
-  res.status(201).json({
-    status: "success",
-    data: savedProduct,
-  });
-});
-
-//PATCH/UPDATE PRODUCT BY ID
-exports.UpdateProducts = async (req, res, next) => {
-  console.log(
-    "UpdateProducts called" + req.params.id + JSON.stringify(req.body)
-  );
-
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    console.log(updatedProduct);
-    if (!updatedProduct) {
-      return next(new CustomError("Product not found", 404));
-    }
-
-    res.json({
-      status: "update success",
-      data: updatedProduct,
+// GET LEAVE BALANCE BY USER ID
+exports.getLeaveBalanceByUserId = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user ? req.user.id : req.params.id;
+  console.log("Get Leave Balance for User ID: " + userId);
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
     });
-  } catch (err) {
-    next(err);
-  }
-};
-
-//DELETE PRODUCT BY ID
-exports.deleteProducts = asyncErrorHandler(async (req, res, next) => {
-  const deletedProduct = await Product.findByIdAndDelete(req.params.id);
-
-  if (!deletedProduct) {
-    return next(new CustomError("Product not found", 404));
   }
 
-  res.json({
-    status: "deletion success",
-    data: deletedProduct,
+  const leaveBalance = await LeaveBalance.findOne({
+    userId: userId,
+    year: new Date().getFullYear(),
   });
-});
 
-//GET PRODUCT STATISTICS- AGGREGATION PIPELINE
-exports.getproductStats = asyncErrorHandler(async (req, res, next) => {
-  const stats = await Product.aggregate([
-    {
-      $match: { rating: { $gte: 4.5 } },
-    },
-    //   {
-    //     $group: {
-    //       _id: "$currency",   //grouping based on _id field -here currency
-    //       numProducts: { $sum: 1 },
-    //       avgRating: { $avg: "$rating" },
-    //       avgPrice: { $avg: "$price" },
-    //       minPrice: { $min: "$price" },
-    //       maxPrice: { $max: "$price" },
-    //     },
-    //   },
-    {
-      $sort: { avgPrice: 1 },
-    },
-  ]);
+  if (!leaveBalance) {
+    return next(new CustomError("Leave balance not found", 404));
+  }
 
-  res.json({
+  res.status(200).json({
     status: "success",
-    count: stats.length,
-    data: stats,
-  });
-});
-//UNWIND EXAMPLE
-exports.getProductsByTag = asyncErrorHandler(async (req, res, next) => {
-  const tag = req.params.tag;
-
-  const stats = await Product.aggregate([
-    {
-      $unwind: "$tags",
-    },
-    {
-      $group: {
-        _id: "$tags",
-        numProducts: { $sum: 1 },
-        products: { $push: "$name" },
-        avgRating: { $avg: "$rating" },
-        avgPrice: { $avg: "$price" },
-        minPrice: { $min: "$price" },
-        maxPrice: { $max: "$price" },
-      },
-    },
-    { $addFields: { tag: "$_id" } },
-    { $project: { _id: 0 } },
-    { $match: { tag: tag } },
-    {
-      $sort: { numProducts: -1 },
-    },
-  ]);
-
-  res.json({
-    status: "success",
-
-    data: stats,
+    data: leaveBalance,
   });
 });
