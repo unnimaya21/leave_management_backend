@@ -157,6 +157,26 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   });
 });
 
+//GET LEAVE  REQUESTS BY USER ID
+exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user ? req.user.id : req.body.userId;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
+    });
+  }
+
+  const leaveRequests = await LeaveRequest.find({ userId: userId });
+
+  res.status(200).json({
+    status: "success",
+    results: leaveRequests.length,
+    data: leaveRequests,
+  });
+});
+
 // CREATE NEW PRODUCT
 exports.AddProducts = asyncErrorHandler(async (req, res, next) => {
   const savedProduct = await Product.create(req.body);

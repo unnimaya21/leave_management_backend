@@ -9,6 +9,7 @@ const {
   deleteProducts,
   getproductStats,
   getProductsByTag,
+  getLeaveRequestsByUserId,
 } = require("../controllers/leaveController");
 
 // router.route("/").get(authController.protect, getProducts).post(AddProducts);
@@ -24,4 +25,6 @@ router.route("/stats").get(getproductStats);
 router.route("/product-by-tag/:tag").get(getProductsByTag);
 router.route("/leave-balance/:id").get(getLeaveBalanceById);
 router.route("/newLeaveRequest").post(authController.protect, AddLeaveRequest); //EXPORT ROUTER
+router.route("/").get(authController.protect, getLeaveRequestsByUserId);
+
 module.exports = router;
