@@ -148,7 +148,8 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
       message: "User ID is required",
     });
   }
-  const savedLeaveRequest = await LeaveRequest.create(req.body, ...{ userId });
+  req.body.userId = userId;
+  const savedLeaveRequest = await LeaveRequest.create(req.body);
 
   res.status(201).json({
     status: "success",
