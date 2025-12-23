@@ -6,6 +6,7 @@ const apiFeatures = require("../Utils/apiFeatures");
 const CustomError = require("../Utils/customError");
 const asyncErrorHandler = require("../Utils/asyncErrorHandler");
 const LeaveRequest = require("../Models/leaveRequestModel");
+const LeaveBalance = require("../Models/leaveBalanceModel");
 
 //GET ALL PRODUCTS OR FILTERED PRODUCTS BASED ON QUERY PARAMS
 exports.getLeaveBalance = asyncErrorHandler(async (req, res) => {
@@ -150,6 +151,16 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   }
   req.body.userId = userId;
   const savedLeaveRequest = await LeaveRequest.create(req.body);
+  const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
+    { userId: userId, year: new Date().getFullYear() },
+    {
+      $inc: {
+        [`categories.${req.body.leaveType}.pending`]: +req.body.totalDays,
+        [`categories.${req.body.leaveType}.available`]: -req.body.totalDays,
+      },
+    },
+    { new: true }
+  );
 
   res.status(201).json({
     status: "success",

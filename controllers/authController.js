@@ -7,6 +7,7 @@ const asyncErrorHandler = require("../Utils/asyncErrorHandler");
 const util = require("util");
 const sendEmail = require("../Utils/email");
 const crypto = require("crypto");
+const LeaveBalance = require("../Models/leaveBalanceModel");
 
 // You can add your authentication controller methods here
 // For example:
@@ -14,6 +15,13 @@ const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
+};
+const INITIAL_LEAVE_QUOTA = {
+  other: { total: 5, used: 0, pending: 0, available: 5 },
+  vacation: { total: 10, used: 0, pending: 0, available: 10 },
+  sick: { total: 8, used: 0, pending: 0, available: 8 },
+  casual: { total: 5, used: 0, pending: 0, available: 5 },
+  paid: { total: 0, used: 0, pending: 0, available: 0 },
 };
 createLoginResponse = (user, res, statuscode) => {
   const token = signToken(user._id);
@@ -33,6 +41,11 @@ exports.signup = asyncErrorHandler(async (req, res) => {
   console.log(req.body);
   const newUser = await User.create(req.body);
 
+  const leaveBalance = await LeaveBalance.create({
+    userId: newUser._id,
+    categories: INITIAL_LEAVE_QUOTA,
+    year: new Date().getFullYear(),
+  });
   createLoginResponse(newUser, res, 201);
 });
 exports.login = asyncErrorHandler(async (req, res, next) => {

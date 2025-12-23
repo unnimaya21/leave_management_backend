@@ -8,7 +8,7 @@ const LeaveRequestSchema = new mongoose.Schema({
   },
   leaveType: {
     type: String,
-    enum: ["sick", "casual", "earned", "vacation", "paid", "other"],
+    enum: ["sick", "casual", "vacation", "paid", "other"],
     required: true,
   },
   startDate: { type: Date, required: true },
