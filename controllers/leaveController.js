@@ -117,7 +117,7 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
 // GET LEAVE BALANCE BY USER ID
 exports.getLeaveBalanceByUserId = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user ? req.user.id : req.params.id;
-  console.log("Get Leave Balance for User ID: " + userId);
+  console.log("Get Leave Balance for User ID: " + req.user + userId);
   if (!userId) {
     return res.status(400).json({
       status: "fail",

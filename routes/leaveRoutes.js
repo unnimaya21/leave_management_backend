@@ -6,11 +6,13 @@ const {
   AddLeaveRequest,
   getLeaveRequestsByUserId,
   withdrawLeaveRequestById,
-  getLeaveBalanceById,
+
   getLeaveBalanceByUserId,
 } = require("../controllers/leaveController");
 
-router.route("/leave-balance/:id").get(getLeaveBalanceByUserId);
+router
+  .route("/leave-balance")
+  .get(authController.protect, getLeaveBalanceByUserId);
 router.route("/newLeaveRequest").post(authController.protect, AddLeaveRequest); //EXPORT ROUTER
 router.route("/").get(authController.protect, getLeaveRequestsByUserId);
 router
