@@ -22,7 +22,7 @@ const authRouter = require("./routes/authRouter");
 const userRouter = require("./routes/userRouter");
 const pantryRouter = require("./routes/pantryRouter");
 // Middleware to parse JSON request bodies
-app.use(express.json({ limit: "10kb" })); //required to parse JSON bodies in POST requests
+// app.use(express.json({ limit: "10kb" })); //required to parse JSON bodies in POST requests
 
 // app.use(sanitize()); // Data sanitization against NoSQL query injection
 
