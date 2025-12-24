@@ -49,7 +49,14 @@ exports.updateMe = asyncErrorHandler(async (req, res, next) => {
 
   // 2 Filtered out unwanted fields names that are not allowed to be updated
   const filteredBody = {};
-  const allowedFields = ["username", "email", "photo"];
+  const allowedFields = [
+    "username",
+    "email",
+    "photo",
+    "designation",
+    "joinedDate",
+    "department",
+  ];
   Object.keys(req.body).forEach((el) => {
     if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
   });
