@@ -21,13 +21,13 @@ const INITIAL_LEAVE_QUOTA = {
   vacation: { total: 10, used: 0, pending: 0, available: 10 },
   sick: { total: 8, used: 0, pending: 0, available: 8 },
   casual: { total: 5, used: 0, pending: 0, available: 5 },
-  paid: { total: 0, used: 0, pending: 0, available: 0 },
+  paid: { total: 6, used: 0, pending: 0, available: 0 },
 };
 createLoginResponse = (user, res, statuscode) => {
   const token = signToken(user._id);
   res.cookie("jwt", token, {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 30000
     ),
     httpOnly: process.env.NODE_ENV == "production" ? true : false,
   });
