@@ -108,7 +108,16 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
 
   leaveRequest.status = "withdrawn";
   await leaveRequest.save();
-
+  const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
+    { userId: userId, year: new Date().getFullYear() },
+    {
+      $inc: {
+        [`categories.${req.body.leaveType}.pending`]: -req.body.totalDays,
+        [`categories.${req.body.leaveType}.available`]: +req.body.totalDays,
+      },
+    },
+    { new: true }
+  );
   res.status(200).json({
     status: "success",
     data: leaveRequest,
