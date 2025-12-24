@@ -26,9 +26,8 @@ const INITIAL_LEAVE_QUOTA = {
 createLoginResponse = (user, res, statuscode) => {
   const token = signToken(user._id);
   res.cookie("jwt", token, {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 30000
-    ),
+    // token expires in 30 minutes from now
+    expires: new Date(Date.now() + 30 * 60 * 1000),
     httpOnly: process.env.NODE_ENV == "production" ? true : false,
   });
   res.status(statuscode).json({
