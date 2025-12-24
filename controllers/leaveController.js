@@ -95,7 +95,14 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
   const leaveRequestId = req.params.requestId;
   console.log("Withdraw Leave Request ID: " + leaveRequestId);
   const leaveRequest = await LeaveRequest.findById(leaveRequestId);
+  const userId = req.user ? req.user.id : req.body.userId;
 
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
+    });
+  }
   if (!leaveRequest) {
     return next(new CustomError("Leave request not found", 404));
   }
@@ -112,8 +119,10 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
     { userId: userId, year: new Date().getFullYear() },
     {
       $inc: {
-        [`categories.${req.body.leaveType}.pending`]: -req.body.totalDays,
-        [`categories.${req.body.leaveType}.available`]: +req.body.totalDays,
+        [`categories.${leaveRequest.leaveType}.pending`]:
+          -leaveRequest.totalDays,
+        [`categories.${leaveRequest.leaveType}.available`]:
+          +leaveRequest.totalDays,
       },
     },
     { new: true }
