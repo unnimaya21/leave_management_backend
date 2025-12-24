@@ -52,6 +52,20 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
     });
   }
   req.body.userId = userId;
+  // Fetch the user's leave balance for the current year
+  const leaveBalance = await LeaveBalance.findOne({
+    userId: userId,
+    year: new Date().getFullYear(),
+  });
+  const availableLeave =
+    leaveBalance.categories[req.body.leaveType]?.available || 0;
+  // Check if available leave is sufficient
+  if (availableLeave < req.body.totalDays) {
+    return res.status(400).json({
+      status: "fail",
+      message: `Insufficient leave balance. Available: ${availableLeave}, Requested: ${req.body.totalDays}`,
+    });
+  }
   const savedLeaveRequest = await LeaveRequest.create(req.body);
   const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
     { userId: userId, year: new Date().getFullYear() },
