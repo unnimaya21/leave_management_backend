@@ -118,8 +118,12 @@ exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
       message: "User ID is required",
     });
   }
-
-  const leaveRequests = await LeaveRequest.find({ userId: userId });
+  var leaveRequests = [];
+  if (req.user.role == "admin") {
+    leaveRequests = await LeaveRequest.find({ status: "pending" });
+  } else {
+    leaveRequests = await LeaveRequest.find({ userId: userId });
+  }
 
   res.status(200).json({
     status: "success",
