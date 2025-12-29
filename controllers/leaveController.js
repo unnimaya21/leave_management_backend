@@ -57,6 +57,28 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
     userId: userId,
     year: new Date().getFullYear(),
   });
+  // Check if there is an existing leave request for any day within the applying leave range
+  const existingLeave = await LeaveRequest.findOne({
+    userId: userId,
+    $or: [
+      {
+        startDate: { $lte: req.body.endDate, $gte: req.body.startDate },
+      },
+      {
+        endDate: { $gte: req.body.startDate, $lte: req.body.endDate },
+      },
+      {
+        startDate: { $lte: req.body.startDate },
+        endDate: { $gte: req.body.endDate },
+      },
+    ],
+  });
+  if (existingLeave) {
+    return res.status(400).json({
+      status: "fail",
+      message: "A leave request already exists for the selected dates.",
+    });
+  }
   const availableLeave =
     leaveBalance.categories[req.body.leaveType]?.available || 0;
   // Check if available leave is sufficient
