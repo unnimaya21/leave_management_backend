@@ -6,8 +6,8 @@ const {
   AddLeaveRequest,
   getLeaveRequestsByUserId,
   withdrawLeaveRequestById,
-
   getLeaveBalanceByUserId,
+  updateLeaveById,
 } = require("../controllers/leaveController");
 
 router
@@ -18,5 +18,8 @@ router.route("/").get(authController.protect, getLeaveRequestsByUserId);
 router
   .route("/withdraw/:requestId")
   .patch(authController.protect, withdrawLeaveRequestById);
+router
+  .route("/update-leave/:id")
+  .patch(authController.protect, updateLeaveById);
 
 module.exports = router;

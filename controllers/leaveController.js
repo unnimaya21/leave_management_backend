@@ -199,3 +199,41 @@ exports.getLeaveBalanceByUserId = asyncErrorHandler(async (req, res, next) => {
     data: leaveBalance,
   });
 });
+//UPDATE LEAVE REQUEST BY ID
+exports.updateLeaveById = asyncErrorHandler(async (req, res, next) => {
+  const leaveRequestId = req.params.id;
+  console.log("Update Leave Request ID: " + leaveRequestId);
+  const leaveRequest = await LeaveRequest.findById(leaveRequestId);
+  const userId = req.user ? req.user.id : req.body.userId;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
+    });
+  }
+  if (!leaveRequest) {
+    return next(new CustomError("Leave request not found", 404));
+  }
+
+  // Update allowed fields
+  const allowedUpdates = [
+    "status",
+    "leaveType",
+    "startDate",
+    "endDate",
+    "totalDays",
+  ];
+  allowedUpdates.forEach((field) => {
+    if (req.body[field] !== undefined) {
+      leaveRequest[field] = req.body[field];
+    }
+  });
+
+  await leaveRequest.save();
+
+  res.status(200).json({
+    status: "success",
+    data: leaveRequest,
+  });
+});
