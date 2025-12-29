@@ -120,7 +120,7 @@ exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
   }
   var leaveRequests = [];
   if (req.user.role == "admin") {
-    leaveRequests = await LeaveRequest.find({ status: "pending" });
+    leaveRequests = await LeaveRequest.find({ status: { $ne: "withdrawn" } });
   } else {
     leaveRequests = await LeaveRequest.find({ userId: userId });
   }
