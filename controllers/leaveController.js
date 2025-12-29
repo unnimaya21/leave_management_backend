@@ -120,9 +120,17 @@ exports.getLeaveRequestsByUserId = asyncErrorHandler(async (req, res, next) => {
   }
   var leaveRequests = [];
   if (req.user.role == "admin") {
-    leaveRequests = await LeaveRequest.find({ status: { $ne: "withdrawn" } });
+    leaveRequests = await LeaveRequest.find({
+      status: { $ne: "withdrawn" },
+    }).populate({
+      path: "userId",
+      select: "username", // Assuming the User model has a 'name' field
+    });
   } else {
-    leaveRequests = await LeaveRequest.find({ userId: userId });
+    leaveRequests = await LeaveRequest.find({ userId: userId }).populate({
+      path: "userId",
+      select: "username", // Assuming the User model has a 'name' field
+    });
   }
 
   res.status(200).json({
