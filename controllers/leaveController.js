@@ -60,6 +60,7 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   // Check if there is an existing leave request for any day within the applying leave range
   const existingLeave = await LeaveRequest.findOne({
     userId: userId,
+    status: { $ne: "withdrawn" }, // Exclude withdrawn requests
     $or: [
       {
         startDate: { $lte: req.body.endDate, $gte: req.body.startDate },
