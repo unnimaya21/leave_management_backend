@@ -8,6 +8,7 @@ const {
   withdrawLeaveRequestById,
   getLeaveBalanceByUserId,
   updateLeaveById,
+  dayWiseLeaveReport,
 } = require("../controllers/leaveController");
 
 router
@@ -22,4 +23,7 @@ router
   .route("/update-leave/:id")
   .patch(authController.protect, updateLeaveById);
 
+router
+  .route("/day-wise-report")
+  .get(authController.protect, dayWiseLeaveReport);
 module.exports = router;

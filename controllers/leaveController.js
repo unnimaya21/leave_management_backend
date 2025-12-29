@@ -245,3 +245,103 @@ exports.updateLeaveById = asyncErrorHandler(async (req, res, next) => {
     data: leaveRequest,
   });
 });
+// Day wise leave report
+exports.dayWiseLeaveReport = asyncErrorHandler(async (req, res, next) => {
+  const userId = req.user ? req.user.id : req.body.userId;
+
+  if (!userId) {
+    return res.status(400).json({
+      status: "fail",
+      message: "User ID is required",
+    });
+  }
+  const month = parseInt(req.body.month) || new Date().getMonth() + 1;
+  const year = parseInt(req.body.year) || new Date().getFullYear();
+
+  // 2. Define startDate and endDate for the aggregation
+  const startDate = new Date(year, month - 1, 1); // First day of month
+  const endDate = new Date(year, month, 0, 23, 59, 59); // Last day of month
+  const dayWiseLeave = await LeaveRequest.aggregate([
+    {
+      $match: {
+        status: "approved",
+        startDate: { $lte: endDate },
+        endDate: { $gte: startDate },
+      },
+    },
+    {
+      // Populate user details before grouping so we have names in the report
+      $lookup: {
+        from: "users", // ensure this matches your User collection name
+        localField: "userId",
+        foreignField: "_id",
+        as: "userDetails",
+      },
+    },
+    { $unwind: "$userDetails" },
+    {
+      $addFields: {
+        dateRange: {
+          $map: {
+            input: {
+              $range: [
+                0,
+                {
+                  $add: [
+                    {
+                      $dateDiff: {
+                        startDate: "$startDate",
+                        endDate: "$endDate",
+                        unit: "day",
+                      },
+                    },
+                    1,
+                  ],
+                },
+              ],
+            },
+            as: "day",
+            in: {
+              $dateAdd: {
+                startDate: "$startDate",
+                unit: "day",
+                amount: "$$day",
+              },
+            },
+          },
+        },
+      },
+    },
+    { $unwind: "$dateRange" },
+    {
+      $match: {
+        dateRange: { $gte: startDate, $lte: endDate },
+      },
+    },
+    {
+      $group: {
+        // ADDING TIMEZONE ensures dates align with your local calendar
+        _id: {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$dateRange",
+            timezone: "Asia/Kolkata",
+          },
+        },
+        totalLeaves: { $sum: 1 },
+        breakdown: {
+          $push: {
+            type: "$leaveType",
+            username: "$userDetails.username",
+            reason: "$reason",
+          },
+        },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+  res.status(200).json({
+    status: "success",
+    data: dayWiseLeave,
+  });
+});
