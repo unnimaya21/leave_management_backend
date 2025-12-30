@@ -323,7 +323,7 @@ exports.dayWiseLeaveReport = asyncErrorHandler(async (req, res, next) => {
         // ADDING TIMEZONE ensures dates align with your local calendar
         _id: {
           $dateToString: {
-            format: "%Y-%m-%d",
+            format: "%d-%m-%Y",
             date: "$dateRange",
             timezone: "Asia/Kolkata",
           },
