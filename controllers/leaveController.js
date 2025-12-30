@@ -264,7 +264,7 @@ exports.dayWiseLeaveReport = asyncErrorHandler(async (req, res, next) => {
   const dayWiseLeave = await LeaveRequest.aggregate([
     {
       $match: {
-        status: "approved",
+        status: { $in: ["approved", "pending"] },
         startDate: { $lte: endDate },
         endDate: { $gte: startDate },
       },
