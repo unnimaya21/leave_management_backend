@@ -21,7 +21,7 @@ const INITIAL_LEAVE_QUOTA = {
   vacation: { total: 10, used: 0, pending: 0, available: 10 },
   sick: { total: 8, used: 0, pending: 0, available: 8 },
   casual: { total: 5, used: 0, pending: 0, available: 5 },
-  paid: { total: 6, used: 0, pending: 0, available: 0 },
+  paid: { total: 6, used: 0, pending: 0, available: 6 },
 };
 createLoginResponse = (user, res, statuscode) => {
   const token = signToken(user._id);
