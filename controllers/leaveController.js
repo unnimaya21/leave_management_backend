@@ -45,67 +45,63 @@ exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
 exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user ? req.user.id : req.body.userId;
 
-  if (!userId) {
+  // 1. Force totalDays to be an Integer
+  const requestedDays = parseInt(req.body.totalDays, 10);
+
+  if (!userId || isNaN(requestedDays)) {
     return res.status(400).json({
       status: "fail",
-      message: "User ID is required",
+      message: "User ID and valid totalDays are required",
     });
   }
-  req.body.userId = userId;
-  // Fetch the user's leave balance for the current year
+
   const leaveBalance = await LeaveBalance.findOne({
     userId: userId,
     year: new Date().getFullYear(),
   });
-  // Check if there is an existing leave request for any day within the applying leave range
-  const existingLeave = await LeaveRequest.findOne({
-    userId: userId,
-    status: { $ne: "withdrawn" }, // Exclude withdrawn requests
-    $or: [
-      {
-        startDate: { $lte: req.body.endDate, $gte: req.body.startDate },
-      },
-      {
-        endDate: { $gte: req.body.startDate, $lte: req.body.endDate },
-      },
-      {
-        startDate: { $lte: req.body.startDate },
-        endDate: { $gte: req.body.endDate },
-      },
-    ],
-  });
-  if (existingLeave) {
-    return res.status(400).json({
-      status: "fail",
-      message: "A leave request already exists for the selected dates.",
-    });
-  }
-  const availableLeave =
-    leaveBalance.categories[req.body.leaveType]?.available || 0;
-  // Check if available leave is sufficient
-  if (availableLeave < req.body.totalDays) {
-    return res.status(400).json({
-      status: "fail",
-      message: `Insufficient leave balance. Available: ${availableLeave}, Requested: ${req.body.totalDays}`,
-    });
-  } else {
-    const savedLeaveRequest = await LeaveRequest.create(req.body);
-    const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
-      { userId: userId, year: new Date().getFullYear() },
-      {
-        $inc: {
-          [`categories.${req.body.leaveType}.pending`]: +req.body.totalDays,
-          [`categories.${req.body.leaveType}.available`]: -req.body.totalDays,
-        },
-      },
-      { new: true }
-    );
 
-    res.status(201).json({
-      status: "success",
-      data: savedLeaveRequest,
+  if (!leaveBalance) {
+    return res
+      .status(404)
+      .json({
+        status: "fail",
+        message: "Leave balance record not found for this year.",
+      });
+  }
+
+  // 2. Safely access the available count
+  const category = leaveBalance.categories[req.body.leaveType];
+  if (!category) {
+    return res
+      .status(400)
+      .json({ status: "fail", message: "Invalid leave type." });
+  }
+
+  const availableLeave = category.available || 0;
+
+  // 3. Strict Numeric Comparison
+  if (availableLeave < requestedDays) {
+    return res.status(400).json({
+      status: "fail",
+      message: `Insufficient leave balance. Available: ${availableLeave}, Requested: ${requestedDays}`,
     });
   }
+
+  // Proceed with creation...
+  req.body.totalDays = requestedDays; // Update body with the parsed number
+  const savedLeaveRequest = await LeaveRequest.create(req.body);
+
+  await LeaveBalance.findOneAndUpdate(
+    { userId: userId, year: new Date().getFullYear() },
+    {
+      $inc: {
+        [`categories.${req.body.leaveType}.pending`]: requestedDays,
+        [`categories.${req.body.leaveType}.available`]: -requestedDays,
+      },
+    }
+  );
+
+  res.status(201).json({ status: "success", data: savedLeaveRequest });
 });
 
 //GET LEAVE  REQUESTS BY USER ID
