@@ -67,7 +67,29 @@ exports.login = asyncErrorHandler(async (req, res, next) => {
     return next(error);
   }
 
-  // 3 If everything ok, send token to client
+  const currentYear = new Date().getFullYear();
+
+  // 3. Check if balance already exists for this year
+  let leaveBalance = await LeaveBalance.findOne({
+    userId: user._id,
+    year: currentYear,
+  });
+
+  // 4. If no balance exists, initialize the initial quota
+  if (!leaveBalance) {
+    const initialQuota = {
+      userId: user._id,
+      year: currentYear,
+      categories: INITIAL_LEAVE_QUOTA,
+    };
+
+    leaveBalance = await LeaveBalance.create(initialQuota);
+    console.log(
+      `Initial leave quota created for user ${user.username} for year ${currentYear}`
+    );
+  }
+
+  // 5 If everything ok, send token to client
   createLoginResponse(user, res, 200);
 });
 

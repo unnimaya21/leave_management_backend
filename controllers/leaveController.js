@@ -55,7 +55,7 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   // Fetch the user's leave balance for the current year
   const leaveBalance = await LeaveBalance.findOne({
     userId: userId,
-    year: new Date().getFullYear(),
+    year: new Date(req.body.startDate).getFullYear(),
   });
   // Check if there is an existing leave request for any day within the applying leave range
   const existingLeave = await LeaveRequest.findOne({
@@ -94,7 +94,7 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   } else {
     const savedLeaveRequest = await LeaveRequest.create(req.body);
     await LeaveBalance.findOneAndUpdate(
-      { userId: userId, year: new Date().getFullYear() },
+      { userId: userId, year: new Date(req.body.startDate).getFullYear() },
       {
         $inc: {
           [`categories.${req.body.leaveType}.pending`]: req.body.totalDays,
