@@ -44,6 +44,7 @@ exports.getLeaveBalanceById = asyncErrorHandler(async (req, res, next) => {
 // ADD NEW LEAVE REQEST ENTRY
 exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   const userId = req.user ? req.user.id : req.body.userId;
+  console.log(userId);
 
   // 1. Force totalDays to be an Integer
   const requestedDays = parseInt(req.body.totalDays, 10);
@@ -61,12 +62,10 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   });
 
   if (!leaveBalance) {
-    return res
-      .status(404)
-      .json({
-        status: "fail",
-        message: "Leave balance record not found for this year.",
-      });
+    return res.status(404).json({
+      status: "fail",
+      message: "Leave balance record not found for this year.",
+    });
   }
 
   // 2. Safely access the available count
