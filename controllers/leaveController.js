@@ -82,6 +82,7 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
   }
   const availableLeave =
     leaveBalance.categories[req.body.leaveType]?.available || 0;
+  console.log(leaveBalance.categories[req.body.leaveType]);
 
   console.log("AVAILABLE ", availableLeave, "total", req.body.totalDays);
   // Check if available leave is sufficient
@@ -92,11 +93,11 @@ exports.AddLeaveRequest = asyncErrorHandler(async (req, res, next) => {
     });
   } else {
     const savedLeaveRequest = await LeaveRequest.create(req.body);
-    const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
+    await LeaveBalance.findOneAndUpdate(
       { userId: userId, year: new Date().getFullYear() },
       {
         $inc: {
-          [`categories.${req.body.leaveType}.pending`]: +req.body.totalDays,
+          [`categories.${req.body.leaveType}.pending`]: req.body.totalDays,
           [`categories.${req.body.leaveType}.available`]: -req.body.totalDays,
         },
       },
