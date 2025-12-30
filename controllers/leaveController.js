@@ -168,7 +168,7 @@ exports.withdrawLeaveRequestById = asyncErrorHandler(async (req, res, next) => {
 
   leaveRequest.status = "withdrawn";
   await leaveRequest.save();
-  const updatedLeaveBalance = await LeaveBalance.findOneAndUpdate(
+  await LeaveBalance.findOneAndUpdate(
     { userId: userId, year: new Date().getFullYear() },
     {
       $inc: {
@@ -213,21 +213,16 @@ exports.getLeaveBalanceByUserId = asyncErrorHandler(async (req, res, next) => {
 //UPDATE LEAVE REQUEST BY ID
 exports.updateLeaveById = asyncErrorHandler(async (req, res, next) => {
   const leaveRequestId = req.params.id;
-  console.log("Update Leave Request ID: " + leaveRequestId);
   const leaveRequest = await LeaveRequest.findById(leaveRequestId);
-  const userId = req.user ? req.user.id : req.body.userId;
 
-  if (!userId) {
-    return res.status(400).json({
-      status: "fail",
-      message: "User ID is required",
-    });
-  }
   if (!leaveRequest) {
     return next(new CustomError("Leave request not found", 404));
   }
 
-  // Update allowed fields
+  const oldStatus = leaveRequest.status;
+  const newStatus = req.body.status;
+
+  // 1. Update the fields
   const allowedUpdates = [
     "status",
     "leaveType",
@@ -240,6 +235,47 @@ exports.updateLeaveById = asyncErrorHandler(async (req, res, next) => {
       leaveRequest[field] = req.body[field];
     }
   });
+
+  // 2. Handle Balance Reversal if status changed to Rejected or Withdrawn
+  // We only revert if we are moving FROM 'pending' TO 'rejected' or 'withdrawn'
+  if (
+    oldStatus === "pending" &&
+    (newStatus === "rejected" || newStatus === "withdrawn")
+  ) {
+    await LeaveBalance.findOneAndUpdate(
+      {
+        userId: leaveRequest.userId, // Use ID from the document for safety
+        year: new Date(leaveRequest.startDate).getFullYear(),
+      },
+      {
+        $inc: {
+          [`categories.${leaveRequest.leaveType}.pending`]:
+            -leaveRequest.totalDays,
+          [`categories.${leaveRequest.leaveType}.available`]:
+            +leaveRequest.totalDays,
+        },
+      }
+    );
+  }
+
+  // 3. Handle Approval Logic (Optional but recommended)
+  // If moving from 'pending' to 'approved', move days from pending to used
+  else if (oldStatus === "pending" && newStatus === "approved") {
+    await LeaveBalance.findOneAndUpdate(
+      {
+        userId: leaveRequest.userId,
+        year: new Date(leaveRequest.startDate).getFullYear(),
+      },
+      {
+        $inc: {
+          [`categories.${leaveRequest.leaveType}.pending`]:
+            -leaveRequest.totalDays,
+          [`categories.${leaveRequest.leaveType}.used`]:
+            +leaveRequest.totalDays,
+        },
+      }
+    );
+  }
 
   await leaveRequest.save();
 
